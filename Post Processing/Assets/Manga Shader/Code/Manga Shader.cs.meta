@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 4068a5481a388934683b9181f0105d4d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
