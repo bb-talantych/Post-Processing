@@ -23,7 +23,7 @@ Shader "Burnobad/Manga Shader"
         float4 _MainTex_ST, _MainTex_TexelSize;
         float  _HighThreshold, _LowThreshold;
 
-        float4 _PaperTex;
+        sampler2D _PaperTex;
         float4 _PaperTex_ST;
 
         v2f vert (appdata v)
@@ -410,5 +410,25 @@ Shader "Burnobad/Manga Shader"
 
             ENDCG
         }
+        Pass
+        {
+            Name "Color"
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            float4 frag(v2f i) : SV_Target 
+            {
+                float4 edgesTex = tex2D(_MainTex, i.uv);
+                float4 paperTex = tex2D(_PaperTex, i.uv);
+
+                float4 finalTex = lerp(paperTex, 0, edgesTex.a);
+
+                return finalTex;
+            }
+
+            ENDCG
+        }  
     }
 }

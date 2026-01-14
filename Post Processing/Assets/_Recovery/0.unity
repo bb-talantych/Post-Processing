@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &631426813
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -225,7 +225,7 @@ Transform:
   m_GameObject: {fileID: 631426812}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21, y: 0, z: 0.93}
+  m_LocalPosition: {x: 0.27, y: 0, z: 1.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -587,13 +587,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4068a5481a388934683b9181f0105d4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MangaEffect
-  image: {fileID: 2800000, guid: 7d4bb13ac20c8dd4a8e7b9954668d9b2, type: 3}
+  image: {fileID: 0}
   useImage: 0
-  capturing: 1
-  blurType: 2
-  operatorType: 0
-  highThreshold: 0.056
-  lowThreshold: 0.01
+  blurType: 0
+  operatorType: 1
+  highThreshold: 0.297
+  lowThreshold: 0.1
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
   mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
 --- !u!1 &1971916492

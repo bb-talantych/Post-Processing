@@ -582,18 +582,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946500919}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4068a5481a388934683b9181f0105d4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MangaEffect
   image: {fileID: 2800000, guid: 7d4bb13ac20c8dd4a8e7b9954668d9b2, type: 3}
   useImage: 0
-  capturing: 1
-  blurType: 2
+  blurType: 0
   operatorType: 0
-  highThreshold: 0.056
-  lowThreshold: 0.01
+  highThreshold: 0.1
+  lowThreshold: 0.25
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
   mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
 --- !u!1 &1971916492
