@@ -227,7 +227,6 @@ GameObject:
   - component: {fileID: 484191360}
   - component: {fileID: 484191359}
   - component: {fileID: 484191358}
-  - component: {fileID: 484191361}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -309,20 +308,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &484191361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 484191357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 509398e87096b134e89dd3c1a826c9a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SharpnessEffect
-  sharpness: 1.41
-  sharpness_Shader: {fileID: 4800000, guid: 91dac03d93a2fe44a809825153e813c7, type: 3}
 --- !u!1 &1112248690
 GameObject:
   m_ObjectHideFlags: 0
