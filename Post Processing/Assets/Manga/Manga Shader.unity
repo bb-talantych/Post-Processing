@@ -589,10 +589,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MangaEffect
   image: {fileID: 2800000, guid: 7d4bb13ac20c8dd4a8e7b9954668d9b2, type: 3}
   useImage: 0
-  capturing: 1
-  blurType: 2
+  capturing: 0
+  blurType: 1
   operatorType: 0
-  highThreshold: 0.056
+  highThreshold: 0.15
   lowThreshold: 0.01
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
   mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
