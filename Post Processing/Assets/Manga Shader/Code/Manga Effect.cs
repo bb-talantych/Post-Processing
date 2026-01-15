@@ -6,42 +6,23 @@ using CameraCommon;
 [ExecuteInEditMode]
 public class MangaEffect : MonoBehaviour
 {
-    public Texture image;
-    public bool useImage = false;
-    public bool capturing = false;
+    #region Enums
     public enum BlurTypes
     {
         None,
         Box,
         Gaussian
     };
-    [Tooltip("Gaussian blur is abysmal for post processing, don't use it." +
-        " I included it just because the original canny edge detection does")]
-    public BlurTypes blurType = BlurTypes.None;
-
     public enum Operators
     {
         Sobel,
         Prewitt,
         Scharr
     };
-    public Operators operatorType = Operators.Sobel;
-
-    [Range(0.01f, 1.0f)]
-    public float highThreshold = 0.8f;
-    [Range(0.01f, 1.0f)]
-    public float lowThreshold = 0.1f;
-
-    public Texture paperTexture;
-
-    [HideInInspector]
-    public Shader mangaShader;
-    private Material mangaMaterial = null;
-
     private enum ShaderPasses
-    { 
+    {
         BlurPass,
-        Luminocity,
+        Luminance,
         CalculateIntensityPass,
         CalculateIntensityPassFull,
         MagnitudeThresholdingPass,
@@ -49,12 +30,49 @@ public class MangaEffect : MonoBehaviour
         Hysteresis,
         Color
     }
+    #endregion
+
+    [Header("Settings")]
+    public Texture image;
+    public bool useImage = false;
+    public bool capturing = false;
+
+
+    [Header("Canny Edge Detection")]
+    [Tooltip("Gaussian blur is abysmal for post processing, don't use it." +
+    " I included it just because the original canny edge detection does")]
+    public BlurTypes blurType = BlurTypes.None;
+    public Operators operatorType = Operators.Sobel;
+
+    [Range(0.01f, 1.0f)]
+    public float highThreshold = 0.8f;
+    [Range(0.01f, 1.0f)]
+    public float lowThreshold = 0.1f;
+
+    [Header("Manga Properties")]
+    [Range(0, 1.0f)]
+    public float luminanceThreshold_High = 0.75f;
+    [Range(0, 1.0f)]
+    public float luminanceThreshold_Med = 0.5f;
+    [Range(0, 1.0f)]
+    public float luminanceThreshold_Low = 0.25f;
+
+    public Color shadowColor = Color.black;
+    public Color shadowedAreaColor = Color.gray;
+    public Texture paperTexture;
+    public Texture hatchTexture;
+    public Vector2 hatchTiling = new Vector2(1.777778f, 1);
+    [Range(0.01f, 10.0f)]
+    public float hatchTilingScale = 5;
+
+    [HideInInspector]
+    public Shader mangaShader;
+    private Material mangaMaterial = null;
 
     void OnDisable()
     {
         mangaMaterial = null;
     }
-
     private void OnRenderImage(RenderTexture _source, RenderTexture _destination)
     {
         if(!BB_Rendering.ShaderMaterialReady(mangaShader, ref mangaMaterial))
@@ -87,28 +105,39 @@ public class MangaEffect : MonoBehaviour
         }
         mangaMaterial.SetFloat("_HighThreshold", highThreshold);
         mangaMaterial.SetFloat("_LowThreshold", lowThreshold);
-        mangaMaterial.SetTexture("_PaperTex", paperTexture);
+        Vector3 luminanceThresholds = new Vector3(luminanceThreshold_High, luminanceThreshold_Med, luminanceThreshold_Low); ;
+        mangaMaterial.SetVector("_LuminanceThresholds", luminanceThresholds);
 
-        int width = useImage ? image.width : _source.width;
-        int height = useImage ? image.height : _source.height;
+        mangaMaterial.SetColor("_ShadowColor", shadowColor);
+        mangaMaterial.SetColor("_ShadowedAreaColor", shadowedAreaColor);
+        mangaMaterial.SetTexture("_PaperTex", paperTexture);
+        mangaMaterial.SetTexture("_HatchTex", hatchTexture);
+        mangaMaterial.SetVector("_HatchTiling", hatchTiling * hatchTilingScale);
+
+        //int width = useImage ? image.width : _source.width;
+        //int height = useImage ? image.height : _source.height;
+        int width = _source.width;
+        int height = _source.height;
 
         RenderTexture edgeSource = RenderTexture.GetTemporary(width, height, 0, _source.format);
 
         #region Canny Edge Detection
+        RenderTexture luminanceSource =
+            RenderTexture.GetTemporary(width, height, 0, _source.format);
+        Graphics.Blit(useImage ? image : _source, luminanceSource, mangaMaterial,
+            (int)ShaderPasses.Luminance);
+
+        mangaMaterial.SetTexture("_LuminanceTex", luminanceSource);
+
         RenderTexture blurSource =
             RenderTexture.GetTemporary(width, height, 0, _source.format);
-        Graphics.Blit(useImage ? image : _source, blurSource, mangaMaterial,
+        Graphics.Blit(luminanceSource, blurSource, mangaMaterial,
             (int)ShaderPasses.BlurPass);
-
-        RenderTexture luminocitySource =
-            RenderTexture.GetTemporary(width, height, 0, _source.format);
-        Graphics.Blit(blurSource, luminocitySource, mangaMaterial,
-            (int)ShaderPasses.Luminocity);
 
         RenderTexture calculateIntensitySource =
             RenderTexture.GetTemporary(width, height, 0, _source.format);
-        Graphics.Blit(luminocitySource, calculateIntensitySource, mangaMaterial,
-            (int)ShaderPasses.CalculateIntensityPassFull);
+        Graphics.Blit(blurSource, calculateIntensitySource, mangaMaterial,
+            (int)ShaderPasses.CalculateIntensityPass);
 
         RenderTexture magnitudeThresholdingSource =
             RenderTexture.GetTemporary(width, height, 0, _source.format);
@@ -123,16 +152,19 @@ public class MangaEffect : MonoBehaviour
         Graphics.Blit(doubleThresholdSource, edgeSource, mangaMaterial,
             (int)ShaderPasses.Hysteresis);
 
+        // testing
+        //Graphics.Blit(edgeSource, _destination);
+
+        RenderTexture.ReleaseTemporary(luminanceSource);
         RenderTexture.ReleaseTemporary(blurSource);
-        RenderTexture.ReleaseTemporary(luminocitySource);
         RenderTexture.ReleaseTemporary(calculateIntensitySource);
         RenderTexture.ReleaseTemporary(magnitudeThresholdingSource);
         RenderTexture.ReleaseTemporary(doubleThresholdSource);
 
         #endregion
 
-        Graphics.Blit(edgeSource, _destination, mangaMaterial, (int) ShaderPasses.Color);
-        RenderTexture.ReleaseTemporary(edgeSource);
+       Graphics.Blit(edgeSource, _destination, mangaMaterial, (int)ShaderPasses.Color);
+       RenderTexture.ReleaseTemporary(edgeSource);
     }
 
     private void LateUpdate()
