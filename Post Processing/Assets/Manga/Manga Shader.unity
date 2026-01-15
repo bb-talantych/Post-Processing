@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &631426813
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -263,10 +263,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1971916496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1919.9999, y: 1081.6901}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1347551616
 MonoBehaviour:
@@ -519,7 +519,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -569,7 +569,7 @@ Transform:
   m_GameObject: {fileID: 1946500919}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -587,14 +587,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4068a5481a388934683b9181f0105d4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MangaEffect
-  image: {fileID: 2800000, guid: 7d4bb13ac20c8dd4a8e7b9954668d9b2, type: 3}
+  image: {fileID: 2800000, guid: 12a3f11fd6973f846bbbfedc99d68c98, type: 3}
   useImage: 0
   capturing: 0
-  blurType: 1
+  blurType: 0
   operatorType: 0
-  highThreshold: 0.15
-  lowThreshold: 0.01
+  highThreshold: 0.33
+  lowThreshold: 0.1
+  luminanceThreshold_High: 1
+  luminanceThreshold_Med: 0.612
+  luminanceThreshold_Low: 0.604
+  shadowColor: {r: 0, g: 0, b: 0, a: 1}
+  shadowedAreaColor: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 1}
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
+  hatchTexture: {fileID: 2800000, guid: 2212221064cae5745b78b0383c5852ae, type: 3}
+  hatchTiling: {x: 7.111112, y: 1}
+  hatchTilingScale: 1.15
   mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
 --- !u!1 &1971916492
 GameObject:
@@ -614,7 +622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1971916493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,14 +655,14 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1971916495
 Canvas:
   m_ObjectHideFlags: 0
@@ -664,7 +672,7 @@ Canvas:
   m_GameObject: {fileID: 1971916492}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 2
   m_Camera: {fileID: 1946500921}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -686,8 +694,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971916492}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 98}
+  m_LocalScale: {x: 0.10674967, y: 0.10674967, z: 0.10674967}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1347551615}
@@ -696,8 +704,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_SizeDelta: {x: 1919.9999, y: 1081.6901}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -17,14 +17,18 @@ Shader "Burnobad/Manga Shader"
         {
             float2 uv : TEXCOORD0;
             float4 vertex : SV_POSITION;
+            float2 hatchUV : TEXCOORD1;
         };
 
-        sampler2D _MainTex;
+        sampler2D _MainTex, _LuminanceTex;
         float4 _MainTex_ST, _MainTex_TexelSize;
-        float  _HighThreshold, _LowThreshold;
 
-        sampler2D _PaperTex;
-        float4 _PaperTex_ST;
+        float  _HighThreshold, _LowThreshold;
+        sampler2D _PaperTex, _HatchTex;
+        float4 _HatchTex_ST;
+        float2 _HatchTiling;
+        float3 _LuminanceThresholds;
+        float4 _ShadowColor, _ShadowedAreaColor;
 
         v2f vert (appdata v)
         {
@@ -32,6 +36,7 @@ Shader "Burnobad/Manga Shader"
 
             o.vertex = UnityObjectToClipPos(v.vertex);
             o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+            o.hatchUV = TRANSFORM_TEX(v.uv, _HatchTex);
 
             return o;
         }
@@ -129,6 +134,8 @@ Shader "Burnobad/Manga Shader"
             fixed4 frag (v2f i) : SV_Target
             {
                 float4 mainTex = tex2D(_MainTex, i.uv);
+                
+                //return 1;
                 //return 0.2126 * mainTex.r + 0.7152 * mainTex.g + 0.0722 * mainTex.b;
                 return LinearRgbToLuminance(mainTex);
             }
@@ -409,23 +416,50 @@ Shader "Burnobad/Manga Shader"
             }
 
             ENDCG
-        }
+        }     
         Pass
         {
             Name "Color"
 
             CGPROGRAM
             #pragma vertex vert
-            #pragma fragment frag
+            #pragma fragment frag           
 
             float4 frag(v2f i) : SV_Target 
             {
-                float4 edgesTex = tex2D(_MainTex, i.uv);
+                float edges = tex2D(_MainTex, i.uv).a;
+                float3 luminaceTex = tex2D(_LuminanceTex, i.uv);
+                float luminance = luminaceTex.r + luminaceTex.g + luminaceTex.b;
+
                 float4 paperTex = tex2D(_PaperTex, i.uv);
+                float2 hatchUV = float2(i.hatchUV.x * _HatchTiling.x, i.hatchUV.y * _HatchTiling.y);
+                float4 hatchTex = tex2D(_HatchTex, hatchUV);
 
-                float4 finalTex = lerp(paperTex, 0, edgesTex.a);
+                float4 selectedTex = 0;
+                if(luminance >= _LuminanceThresholds.x)
+                {
+                    selectedTex = paperTex;
+                    luminance = 1;
+                }
+                else if(luminance >= _LuminanceThresholds.y)
+                {
+                    selectedTex = lerp(_ShadowedAreaColor, _ShadowColor, hatchTex.a);
+                    luminance = 0.75;
+                }
+                else if(luminance >= _LuminanceThresholds.z)
+                {
+                    selectedTex = lerp(_ShadowedAreaColor, _ShadowColor, hatchTex.a);
+                    luminance = 0.25;
+                }
+                else
+                {
+                    selectedTex = _ShadowColor;
+                    luminance = 0;
+                }
 
-                return finalTex;
+                float4 finalOutput = lerp(selectedTex, 0, edges);
+
+                return saturate(luminance);
             }
 
             ENDCG
