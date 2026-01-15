@@ -1,4 +1,4 @@
-Shader "Unlit/SimpleSharpness"
+Shader "Burnobad/SimpleSharpness"
 {
     Properties
     {

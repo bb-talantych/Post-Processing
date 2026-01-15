@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &631426813
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -588,15 +588,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MangaEffect
   image: {fileID: 2800000, guid: 12a3f11fd6973f846bbbfedc99d68c98, type: 3}
-  useImage: 0
+  useImage: 1
   capturing: 0
   blurType: 0
   operatorType: 0
   highThreshold: 0.33
   lowThreshold: 0.1
   luminanceThreshold_High: 1
-  luminanceThreshold_Med: 0.612
-  luminanceThreshold_Low: 0.604
+  luminanceThreshold_Med: 0.565
+  luminanceThreshold_Low: 0.188
   shadowColor: {r: 0, g: 0, b: 0, a: 1}
   shadowedAreaColor: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 1}
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
@@ -622,7 +622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1971916493
 MonoBehaviour:
   m_ObjectHideFlags: 0
