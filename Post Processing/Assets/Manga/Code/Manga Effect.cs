@@ -24,7 +24,6 @@ public class MangaEffect : MonoBehaviour
         BlurPass,
         Luminance,
         CalculateIntensityPass,
-        CalculateIntensityPassFull,
         MagnitudeThresholdingPass,
         DoubleThreshold,
         Hysteresis,
@@ -57,13 +56,20 @@ public class MangaEffect : MonoBehaviour
     [Range(0, 1.0f)]
     public float luminanceThreshold_Low = 0.25f;
 
-    public Color shadowColor = Color.black;
+    public Color backgroundColor = Color.white;
     public Color shadowedAreaColor = Color.gray;
+    public Color shadowColor = Color.black;
     public Texture paperTexture;
+
+    [Header("Hatch Properties")]
     public Texture hatchTexture;
     public Vector2 hatchTiling = new Vector2(1.777778f, 1);
     [Range(0.01f, 10.0f)]
     public float hatchTilingScale = 5;
+    [Range(0.0f, 360.0f)]
+    public float hatchRotation = 0;
+    [Range(0.0f, 360.0f)]
+    public float secondaryHatchRotation = 90;
 
     [HideInInspector]
     public Shader mangaShader;
@@ -103,23 +109,26 @@ public class MangaEffect : MonoBehaviour
                 mangaMaterial.EnableKeyword("SCHARR");
                 break;
         }
+
         mangaMaterial.SetFloat("_HighThreshold", highThreshold);
         mangaMaterial.SetFloat("_LowThreshold", lowThreshold);
         Vector3 luminanceThresholds = new Vector3(luminanceThreshold_High, luminanceThreshold_Med, luminanceThreshold_Low); ;
         mangaMaterial.SetVector("_LuminanceThresholds", luminanceThresholds);
 
+        mangaMaterial.SetColor("_BackgroundColor", backgroundColor);
         mangaMaterial.SetColor("_ShadowColor", shadowColor);
-        mangaMaterial.SetColor("_ShadowedAreaColor", shadowedAreaColor);
         mangaMaterial.SetTexture("_PaperTex", paperTexture);
         mangaMaterial.SetTexture("_HatchTex", hatchTexture);
         mangaMaterial.SetVector("_HatchTiling", hatchTiling * hatchTilingScale);
+        mangaMaterial.SetFloat("_HatchRotation", hatchRotation);
+        mangaMaterial.SetFloat("_SecondaryHatchRotation", secondaryHatchRotation);
 
         //int width = useImage ? image.width : _source.width;
         //int height = useImage ? image.height : _source.height;
         int width = _source.width;
         int height = _source.height;
 
-        RenderTexture edgeSource = RenderTexture.GetTemporary(width, height, 0, _source.format);
+        RenderTexture cannySource = RenderTexture.GetTemporary(width, height, 0, _source.format);
 
         #region Canny Edge Detection
         RenderTexture luminanceSource =
@@ -149,11 +158,11 @@ public class MangaEffect : MonoBehaviour
         Graphics.Blit(magnitudeThresholdingSource, doubleThresholdSource, mangaMaterial,
             (int)ShaderPasses.DoubleThreshold);
 
-        Graphics.Blit(doubleThresholdSource, edgeSource, mangaMaterial,
+        Graphics.Blit(doubleThresholdSource, cannySource, mangaMaterial,
             (int)ShaderPasses.Hysteresis);
 
         // testing
-        //Graphics.Blit(edgeSource, _destination);
+        //Graphics.Blit(cannySource, _destination);
 
         RenderTexture.ReleaseTemporary(luminanceSource);
         RenderTexture.ReleaseTemporary(blurSource);
@@ -163,8 +172,9 @@ public class MangaEffect : MonoBehaviour
 
         #endregion
 
-       Graphics.Blit(edgeSource, _destination, mangaMaterial, (int)ShaderPasses.Color);
-       RenderTexture.ReleaseTemporary(edgeSource);
+        Graphics.Blit(cannySource, _destination, mangaMaterial, (int)ShaderPasses.Color);
+        RenderTexture.ReleaseTemporary(cannySource);
+
     }
 
     private void LateUpdate()
