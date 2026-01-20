@@ -22,14 +22,20 @@ Shader "Burnobad/Manga Shader"
 
         sampler2D _MainTex, _LuminanceTex;
         float4 _MainTex_ST, _MainTex_TexelSize;
-        float3 _LuminanceThresholds;
-        float4 _BackgroundColor, _ShadowColor, _ShadowedAreaColor;
 
         float  _HighThreshold, _LowThreshold;
-        sampler2D _PaperTex, _HatchTex;
+        float4 _OutlineColor;
+
+        float4 _LuminanceThresholds;
+        float4 _BackgroundColor, _ShadowColor;
+        sampler2D _PaperTex;
+
+        sampler2D _HatchTex;
         float4 _HatchTex_ST;
         float2 _HatchTiling;
         float _HatchRotation, _SecondaryHatchRotation;
+        float4 _MainHatchColor, _SecondaryHatchColor;
+        float _HatchBlendingTreshold, _SecondaryHatchBlendingTreshold;
 
         static const float PI = 3.14159265f;
 
@@ -247,7 +253,9 @@ Shader "Burnobad/Manga Shader"
             CGPROGRAM
 
             #pragma vertex vert
-            #pragma fragment frag     
+            #pragma fragment frag
+            
+            #pragma multi_compile __ GX GX_N_GY
 
             // i discovered that using only alpha produces outlines that are too thin
             // but using the X gradient(r component) works way better, for artistic purposes
@@ -261,40 +269,42 @@ Shader "Burnobad/Manga Shader"
                 float theta = degrees(canny.b);
                 float Mag = canny.a;
 
-                float4 sampledGradient = 0;
+                float3 firstGradient = 0;
+                float3 secondGradient = 0;
                 if ((0.0f <= theta && theta <= 36.0f) || (144.0f <= theta && theta <= 180.0f)) 
                 {
-                    float2 leftGradient = SampleTexture(i.uv, -1, 0).rb;
-                    float2 rightGradient = SampleTexture(i.uv, 1, 0).rb;
-
-                    sampledGradient = float4(leftGradient, rightGradient);
+                    firstGradient = SampleTexture(i.uv, -1, 0).rba;
+                    secondGradient = SampleTexture(i.uv, 1, 0).rba;
                 }
                 else  if ((72.0f <= theta && theta <= 36.0f)) 
                 {
-                    float2 topRightGradient = SampleTexture(i.uv, 1, 1).rb;
-                    float2 bottomLeftGradient = SampleTexture(i.uv, -1, -1).rb;
-
-                    sampledGradient = float4(topRightGradient, bottomLeftGradient);
+                    firstGradient = SampleTexture(i.uv, 1, 1).rba;
+                    secondGradient = SampleTexture(i.uv, -1, -1).rba;
                 }
                 else  if ((108.0f <= theta && theta <= 72.0f)) 
                 {
-                    float2 topGradient = SampleTexture(i.uv, 0, 1).rb;
-                    float2 bottomGradient = SampleTexture(i.uv, 0, -1).rb;
-
-                    sampledGradient = float4(topGradient, bottomGradient);
+                    firstGradient = SampleTexture(i.uv, 0, 1).rba;
+                    secondGradient = SampleTexture(i.uv, 0, -1).rba;
                 }
                 else
                 {
-                    float2 topLefttGradient = SampleTexture(i.uv, -1, 1).rb;
-                    float2 bottomRightGradient = SampleTexture(i.uv, 1, -1).rb;
-
-                    sampledGradient = float4(topLefttGradient, bottomRightGradient);
+                    firstGradient = SampleTexture(i.uv, -1, 1).rba;
+                    secondGradient = SampleTexture(i.uv, 1, -1).rba;
                 }
 
-                float canny1 = Mag >= sampledGradient.x && Mag >= sampledGradient.z ? canny : 0.0f;
-                float canny2 = Mag >= sampledGradient.y && Mag >= sampledGradient.w ? canny : 0.0f;
+                #if defined(GX) || defined(GX_N_GY)
+                    float cannyX = Mag >= firstGradient.x && Mag >= secondGradient.x ? canny : 0.0f;
+                    canny = cannyX;
 
-                canny = saturate(canny1 + canny2);
+                    #if defined(GX_N_GY)
+                    float cannyY = Mag >= firstGradient.y && Mag >= secondGradient.y ? canny : 0.0f;
+                    canny += cannyY;
+
+                    #endif
+                #else
+                    float cannyA = Mag >= firstGradient.z && Mag >= secondGradient.z ? canny : 0.0f;
+                    canny = cannyA;
+                #endif
 
                 return canny;
             }
@@ -375,6 +385,11 @@ Shader "Burnobad/Manga Shader"
 
             #define HATCH_MULtIPLIER 3
 
+            float4 LerpTexColorA(float4 _paperTex, float4 _color)
+            {
+                return lerp(_paperTex, _color, _color.a);
+            }
+
             float4 frag(v2f i) : SV_Target 
             {
                 float edges = tex2D(_MainTex, i.uv).a;
@@ -388,40 +403,95 @@ Shader "Burnobad/Manga Shader"
                 float4 hatchTex = tex2D(_HatchTex, hatchUV);
                 hatchTex = 1 - hatchTex;
 
-                float2 rotatedHatchUV = RotateUV(hatchUV, _SecondaryHatchRotation);
+                // i add 90, so that at 0 for both hatches, the separation would still be visible
+                float2 rotatedHatchUV = RotateUV(hatchUV, _SecondaryHatchRotation + 90);
                 float4 rotatedHatchTex = tex2D(_HatchTex, rotatedHatchUV);
                 rotatedHatchTex = 1 - rotatedHatchTex;
                 rotatedHatchTex += hatchTex;
-                //rotatedHatchTex *= 0.5;
+                rotatedHatchTex *= 0.5;
                 rotatedHatchTex = saturate(rotatedHatchTex);
 
                 float4 selectedTex = 0;
-                float modifiedLumiance;
                 if(luminance > _LuminanceThresholds.x)
                 {
                     selectedTex = paperTex;
-                    modifiedLumiance = 1;
                 }
-                else if(luminance < _LuminanceThresholds.z)
+                else if(luminance < _LuminanceThresholds.a)
                 {
-                    selectedTex = _ShadowColor;
-                    modifiedLumiance = 0;
-                }
-                else if(luminance > _LuminanceThresholds.y)
-                {
-                    selectedTex = lerp(paperTex, _ShadowedAreaColor, hatchTex.a * HATCH_MULtIPLIER);
-                    modifiedLumiance = 0.75;
+                    selectedTex = LerpTexColorA(paperTex, _ShadowColor);
                 }
                 else
-                {
-                    selectedTex = lerp(paperTex, _ShadowedAreaColor, rotatedHatchTex.a * HATCH_MULtIPLIER);
-                    modifiedLumiance = 0.25;
+                {   
+                    float4 finalHatch = lerp(paperTex,  LerpTexColorA(paperTex, _MainHatchColor),
+                        hatchTex.a * HATCH_MULtIPLIER);  
+                    float4 finalSecondaryHatch = lerp(paperTex,  LerpTexColorA(paperTex, _SecondaryHatchColor),
+                        rotatedHatchTex.a * HATCH_MULtIPLIER);
+
+                    float start = _LuminanceThresholds.a;
+                    float end = _LuminanceThresholds.x;
+
+                    float mainHatchStart = lerp(start, end, _LuminanceThresholds.y);
+                    _LuminanceThresholds.z = min(_LuminanceThresholds.z, _LuminanceThresholds.y);
+                    float secondaryHatchEnd = lerp(start, end, _LuminanceThresholds.z);
+
+                    if(luminance > mainHatchStart)
+                    {
+                        // blending hatsh and paper
+                        float dif = end - mainHatchStart;
+                        float t = (luminance - mainHatchStart) / dif;
+                        selectedTex = lerp(finalHatch, paperTex, t);
+                    }
+                    else if(luminance <= secondaryHatchEnd)
+                    {
+                        // blending shadow and secondary hatch
+                        float dif = secondaryHatchEnd - start;
+                        float t = (luminance - start) / dif;
+                        selectedTex = lerp(_ShadowColor, finalSecondaryHatch, t);
+                    }
+                    else
+                    {
+                        // blending hatches
+                        float mainHatchEnd =  lerp(secondaryHatchEnd, mainHatchStart, _HatchBlendingTreshold);
+                        float secondaryHatchStart = lerp(secondaryHatchEnd, mainHatchStart, _SecondaryHatchBlendingTreshold);
+
+                        if(luminance > mainHatchEnd)
+                        {
+                            //selectedTex = float4(1,0,0,1);
+                            selectedTex = finalHatch;
+                        }
+                        else if(luminance < secondaryHatchStart)
+                        {
+                            //selectedTex = float4(0,0,1,1);
+                            selectedTex = finalSecondaryHatch;
+                        }
+                        else
+                        {
+                            float dif = mainHatchEnd - secondaryHatchStart;
+
+                            float t;
+                            if(dif > 0)
+                            {
+                                t = (luminance - secondaryHatchStart) / dif;
+                            }
+                            else
+                            {
+                                float oneMinusStart = 1 - _SecondaryHatchBlendingTreshold;
+
+                                if(_HatchBlendingTreshold > oneMinusStart)
+                                    t = 0;
+                                else
+                                    t = 1;
+                            }
+                            //selectedTex = float4(0, 1, 0, 1);
+                            //selectedTex = lerp(float4(0,0,1,1), float4(1,0,0,1), t);
+                            selectedTex = lerp(finalSecondaryHatch, finalHatch, t);
+                        }
+                    }
                 }
 
-                float4 finalOutput = lerp(selectedTex, _ShadowColor, edges);
+                float4 finalOutput = lerp(selectedTex, LerpTexColorA(paperTex, _OutlineColor), edges);
 
                 return finalOutput;
-                //return modifiedLumiance;
             }
 
             ENDCG

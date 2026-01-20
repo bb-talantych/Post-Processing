@@ -6,7 +6,7 @@ MonoImporter:
   defaultReferences:
   - image: {instanceID: 0}
   - paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
-  - hatchTexture: {fileID: 2800000, guid: 2212221064cae5745b78b0383c5852ae, type: 3}
+  - hatchTexture: {fileID: 2800000, guid: ae81c0ad75cf8804692ee91da597b522, type: 3}
   - mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
