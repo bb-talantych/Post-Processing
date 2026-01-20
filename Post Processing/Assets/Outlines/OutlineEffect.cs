@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine;
 
 using CameraCommon;
 
@@ -9,8 +8,14 @@ public class OutlineEffect : MonoBehaviour
 {
     [Header("Outline")]
     public Color outlineColor = Color.black;
-    [Range(0.01f, 10.0f)]
-    public float sampleDistance = 1;
+    [Range(0, 10)]
+    public int sampleDistance = 1;
+    [Range(0.0f, 5.0f)]
+    public float depthStrength = 1;
+    [Range(0.0f, 5.0f)]
+    public float luminanceStrength = 1;
+    [Range(0.0f, 5.0f)]
+    public float normlaStrength = 1;
 
     [Header("Outline Checker")]
     public bool enableEdgeChecker;
@@ -30,6 +35,8 @@ public class OutlineEffect : MonoBehaviour
 
         OutlineMaterial.SetColor("_OutlineColor", outlineColor);
         OutlineMaterial.SetFloat("_SampleDistance", sampleDistance);
+        Vector3 sampleStrenght = new Vector3 (depthStrength, luminanceStrength, normlaStrength);
+        OutlineMaterial.SetVector("_SampleStrenght", sampleStrenght);
 
         OutlineMaterial.DisableKeyword("EDGE_CHECKER");
         if (enableEdgeChecker) 
