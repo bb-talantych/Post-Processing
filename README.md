@@ -7,7 +7,8 @@ This is made for Unity 6000.3.2f1 using the built in pipeline.
   * Simple Depth Based
   * Depth + Normal with Noise Offsetting
 * **Manga Effect**
-  * Customizable Canny Edge Detection
-  * Test
+  * Customizable Canny Edge Detector
+  * Quantization of Luminance with Customizable Blending Regions
+  * Customizable Hatching based on Luminance
 * **Sharpness**
   * Basic Sharpening
