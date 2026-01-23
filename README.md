@@ -4,7 +4,7 @@ A central repo, for all my post processing shaders and effects
 This is made for Unity 6000.3.2f1 using the built in pipeline.
 
 * **Edge Detection**
-  * Depth Based
+  * Depth Based with Outward Scaling
   * Depth + Normal with Noise Offsetting
 * **Manga Effect**
   * Customizable Canny Edge Detector
@@ -12,3 +12,4 @@ This is made for Unity 6000.3.2f1 using the built in pipeline.
   * Customizable Hatching based on Luminance
 * **Sharpness**
   * Basic Sharpening
+* **Sobel Angles Visualizer**
