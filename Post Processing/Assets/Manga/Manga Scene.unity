@@ -743,29 +743,29 @@ MonoBehaviour:
   image: {fileID: 2800000, guid: 7d4bb13ac20c8dd4a8e7b9954668d9b2, type: 3}
   hideEffect: 0
   useImage: 1
-  capturing: 0
-  blurType: 2
-  operatorType: 1
+  capturing: 1
+  blurType: 0
+  operatorType: 0
   magThresholdingType: 0
   highThreshold: 1
   lowThreshold: 1
   outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  lightThreshold: 0.4
-  shadowThreshold: 0.04
+  lightThreshold: 0.304
+  shadowThreshold: 0.037
   backgroundColor: {r: 1, g: 0.7659675, b: 0, a: 0}
   shadowColor: {r: 0, g: 0, b: 0, a: 1}
   paperTexture: {fileID: 2800000, guid: e2c8ef4331e2ff7499c54b8a49c13dac, type: 3}
   hatchTexture: {fileID: 2800000, guid: ae81c0ad75cf8804692ee91da597b522, type: 3}
   hatchTiling: {x: 1.777778, y: 1}
-  hatchTilingScale: 3.5
-  hatchRotation: 345
+  hatchTilingScale: 5.1
+  hatchRotation: 224
   secondaryHatchRotation: 0
-  mainHatchColor: {r: 0, g: 0, b: 0, a: 1}
+  mainHatchColor: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 0.62352943}
   secondaryHatchColor: {r: 0, g: 0, b: 0, a: 1}
-  mainHatchingThreshold: 0.775
-  secondaryHatchingThreshold: 0.016
+  mainHatchingThreshold: 0.764
+  secondaryHatchingThreshold: 0.317
   hatchBlendingTreshold: 1
-  secondaryHatchBlendingTreshold: 0.745
+  secondaryHatchBlendingTreshold: 0.634
   mangaShader: {fileID: 4800000, guid: dcdea0c30e88dd24f8f64a6697dc0ae1, type: 3}
 --- !u!1 &1971916492
 GameObject:
