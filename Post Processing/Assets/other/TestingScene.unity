@@ -339,7 +339,6 @@ GameObject:
   - component: {fileID: 484191360}
   - component: {fileID: 484191359}
   - component: {fileID: 484191358}
-  - component: {fileID: 484191361}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -421,26 +420,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &484191361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 484191357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae0dd954b455bf14087020539e1e785b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlinesEffect
-  outlineColor: {r: 0.08884287, g: 1, b: 0, a: 1}
-  sampleDistance: 1
-  depthStrength: 1
-  luminanceStrength: 1.04
-  normlaStrength: 0.85
-  enableEdgeChecker: 0
-  backgroundColor: {r: 1, g: 0.8341014, b: 0, a: 1}
-  OutlineShader: {fileID: 4800000, guid: cc56d9a969d2a584bbc335592ba5c6b4, type: 3}
 --- !u!1 &1112248690
 GameObject:
   m_ObjectHideFlags: 0
